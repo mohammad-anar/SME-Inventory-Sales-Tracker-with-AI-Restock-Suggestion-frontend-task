@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Boxes, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,28 @@ export default function LoginPage() {
           })
         );
         toast.success(`Welcome back, ${response.data.user.name}!`);
-        router.push("/dashboard");
+
+        let target = response.data.user.role === "STAFF" ? "/staff/dashboard" : "/dashboard";
+        if (typeof window !== "undefined") {
+          const params = new URLSearchParams(window.location.search);
+          const redirectParam = params.get("redirect");
+          if (
+            redirectParam &&
+            redirectParam.startsWith("/") &&
+            !redirectParam.startsWith("//")
+          ) {
+            if (
+              response.data.user.role === "STAFF" &&
+              !redirectParam.startsWith("/staff") &&
+              redirectParam !== "/profile"
+            ) {
+              target = "/staff/dashboard";
+            } else {
+              target = redirectParam;
+            }
+          }
+        }
+        router.push(target);
       }
     } catch (err: unknown) {
       const apiErr = err as { data?: { message?: string }; message?: string };
@@ -171,6 +193,18 @@ export default function LoginPage() {
                 </>
               )}
             </Button>
+
+            <div className="pt-2 text-center">
+              <p className="text-xs text-slate-500">
+                Staff member needing access?{" "}
+                <Link
+                  href="/register"
+                  className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+                >
+                  Registration Info
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
 
