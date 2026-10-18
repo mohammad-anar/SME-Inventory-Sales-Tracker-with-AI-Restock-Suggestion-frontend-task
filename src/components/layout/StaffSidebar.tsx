@@ -8,6 +8,8 @@ import {
   LayoutDashboard,
   Package,
   ShoppingCart,
+  Receipt,
+  Activity,
   User,
   LogOut,
   ChevronLeft,
@@ -32,14 +34,24 @@ export const staffNavigationItems: StaffNavItem[] = [
     icon: LayoutDashboard,
   },
   {
+    title: "Create Sale",
+    href: "/sales",
+    icon: ShoppingCart,
+  },
+  {
+    title: "My Sales Records",
+    href: "/staff/sales",
+    icon: Receipt,
+  },
+  {
+    title: "Activity Log",
+    href: "/staff/activities",
+    icon: Activity,
+  },
+  {
     title: "Product Catalog",
     href: "/products",
     icon: Package,
-  },
-  {
-    title: "Sales & Orders",
-    href: "/sales",
-    icon: ShoppingCart,
   },
   {
     title: "My Profile",
