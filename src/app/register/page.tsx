@@ -2,35 +2,69 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Boxes, ArrowLeft, ShieldAlert, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Boxes, ArrowRight, Eye, EyeOff, Loader2, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRegisterMutation } from "@/lib/redux/services/authApi";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { setCredentials } from "@/lib/redux/slices/authSlice";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [register, { isLoading }] = useRegisterMutation();
+
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
+  const [phone, setPhone] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
-  const [validationError, setValidationError] = React.useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setValidationError(null);
+    setErrorMessage(null);
 
     if (password.length < 8) {
-      setValidationError("Password must be at least 8 characters long.");
+      setErrorMessage("Password must be at least 8 characters long.");
       return;
     }
 
     if (password !== confirmPassword) {
-      setValidationError("Passwords do not match.");
+      setErrorMessage("Passwords do not match.");
       return;
     }
 
-    setValidationError(
-      "Public self-registration is disabled by enterprise security policy. Please contact your StockPilot Administrator to provision your Staff credentials."
-    );
+    try {
+      const response = await register({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+        phone: phone.trim() ? phone.trim() : undefined,
+      }).unwrap();
+
+      if (response.success && response.data) {
+        dispatch(
+          setCredentials({
+            token: response.data.token,
+            user: response.data.user,
+          })
+        );
+        toast.success(`Account created successfully! Welcome, ${response.data.user.name}`);
+        router.push("/staff/dashboard");
+      }
+    } catch (err: unknown) {
+      const apiErr = err as { data?: { message?: string }; message?: string };
+      const msg =
+        apiErr?.data?.message ||
+        apiErr?.message ||
+        "Registration failed. Please check your information and try again.";
+      setErrorMessage(msg);
+      toast.error(msg);
+    }
   };
 
   return (
@@ -51,39 +85,22 @@ export default function RegisterPage() {
         </div>
 
         <h2 className="mt-8 text-center text-xl font-semibold tracking-tight text-slate-900">
-          Staff Account Provisioning
+          Create Staff Account
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600">
-          Enterprise access control and staff onboarding guidelines
+          Sign up to join your team and start recording transactions
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
         <div className="rounded-xl border border-slate-200 bg-white px-6 py-8 shadow-sm sm:px-10">
-          <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
-            <div className="flex items-start gap-3">
-              <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <h3 className="text-sm font-semibold text-amber-900">
-                  Admin-Provisioned Access Only
-                </h3>
-                <p className="mt-1 text-xs text-amber-800 leading-relaxed">
-                  To protect business inventory and financial records, public
-                  self-registration is disabled. All Staff accounts must be
-                  created directly by an Administrator via the User Management
-                  portal.
-                </p>
-              </div>
-            </div>
-          </div>
-
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {validationError && (
+            {errorMessage && (
               <div
                 className="rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-700 leading-relaxed"
                 role="alert"
               >
-                {validationError}
+                {errorMessage}
               </div>
             )}
 
@@ -101,8 +118,9 @@ export default function RegisterPage() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Sarah Jenkins"
+                  placeholder="e.g. John Doe"
                   className="h-10"
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -112,7 +130,7 @@ export default function RegisterPage() {
                 htmlFor="email"
                 className="block text-sm font-medium text-slate-700"
               >
-                Work Email
+                Email Address
               </label>
               <div className="mt-1">
                 <Input
@@ -123,7 +141,29 @@ export default function RegisterPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
                   className="h-10"
+                  disabled={isLoading}
                 />
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-slate-700"
+              >
+                Phone Number (Optional)
+              </label>
+              <div className="relative mt-1">
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+1 (555) 000-0000"
+                  className="h-10 pl-9"
+                  disabled={isLoading}
+                />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               </div>
             </div>
 
@@ -132,7 +172,7 @@ export default function RegisterPage() {
                 htmlFor="password"
                 className="block text-sm font-medium text-slate-700"
               >
-                Desired Password
+                Password
               </label>
               <div className="relative mt-1">
                 <Input
@@ -143,6 +183,7 @@ export default function RegisterPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min 8 characters"
                   className="h-10 pr-10"
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
@@ -173,45 +214,42 @@ export default function RegisterPage() {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat desired password"
+                  placeholder="Repeat your password"
                   className="h-10"
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
-            <Button type="submit" variant="outline" className="w-full h-10 text-sm font-medium mt-2">
-              Request Staff Account
+            <Button
+              type="submit"
+              className="w-full h-10 text-sm font-semibold mt-2"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                <>
+                  Create Account
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
           </form>
 
-          <div className="mt-6 border-t border-slate-100 pt-5">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-              How to obtain credentials:
-            </h4>
-            <ul className="space-y-2 text-xs text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Ask your Business Admin to add you under Users.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Receive your assigned email and initial temporary password.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Sign in and manage your personal profile securely.</span>
-              </li>
-            </ul>
-          </div>
-
           <div className="mt-6 pt-4 border-t border-slate-100 text-center">
-            <Link
-              href="/login"
-              className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
-            >
-              <ArrowLeft className="mr-1.5 h-4 w-4" />
-              Back to Sign in
-            </Link>
+            <p className="text-xs text-slate-500">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+              >
+                Sign in
+              </Link>
+            </p>
           </div>
         </div>
 
