@@ -177,3 +177,9 @@ export interface StockMovement {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface UpdateProfilePayload {
+  name?: string;
+  phone?: string | null;
+  avatar?: string | null;
+}
