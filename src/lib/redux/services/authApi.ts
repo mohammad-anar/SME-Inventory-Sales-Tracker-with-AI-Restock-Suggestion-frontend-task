@@ -1,5 +1,5 @@
 import { baseApi } from "./baseApi";
-import { ApiResponse, UserProfile } from "@/types/api";
+import { ApiResponse, UserProfile, RegisterPayload } from "@/types/api";
 
 export interface LoginPayload {
   email: string;
@@ -13,6 +13,14 @@ export interface LoginResponseData {
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    register: builder.mutation<ApiResponse<LoginResponseData>, RegisterPayload>({
+      query: (payload) => ({
+        url: "/auth/register",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["Auth"],
+    }),
     login: builder.mutation<ApiResponse<LoginResponseData>, LoginPayload>({
       query: (credentials) => ({
         url: "/auth/login",
@@ -39,5 +47,11 @@ export const authApi = baseApi.injectEndpoints({
   overrideExisting: false,
 });
 
-export const { useLoginMutation, useGetMeQuery, useLazyGetMeQuery, useLogoutMutation } =
-  authApi;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useGetMeQuery,
+  useLazyGetMeQuery,
+  useLogoutMutation,
+} = authApi;
+
