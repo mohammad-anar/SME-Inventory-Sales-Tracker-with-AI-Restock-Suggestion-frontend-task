@@ -183,3 +183,31 @@ export interface UpdateProfilePayload {
   phone?: string | null;
   avatar?: string | null;
 }
+
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  avatar?: string | null;
+}
+
+export interface StaffSalesSummary {
+  todaySalesCount: number;
+  todaySalesTotal: number;
+  rangeSalesCount: number;
+  rangeSalesTotal: number;
+  completedSalesCount: number;
+  voidedSalesCount: number;
+}
+
+export interface StaffActivity {
+  id: string;
+  type: "SALE_CREATED" | "SALE_VOIDED" | "STOCK_MOVEMENT" | "PURCHASE_ORDER";
+  entityId: string;
+  entityType: string;
+  description: string;
+  timestamp: string;
+  status: string;
+}
+
