@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
 import { useLazyGetMeQuery } from "@/lib/redux/services/authApi";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { setUser } from "@/lib/redux/slices/authSlice";
+import { toast } from "sonner";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -16,10 +18,26 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
 
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const pathname = usePathname();
   const token = useAppSelector((state) => state.auth.token);
   const user = useAppSelector((state) => state.auth.user);
 
   const [triggerGetMe] = useLazyGetMeQuery();
+
+  React.useEffect(() => {
+    const hasToken =
+      token ||
+      (typeof window !== "undefined"
+        ? localStorage.getItem("stockpilot_token")
+        : null);
+
+    if (!hasToken) {
+      router.replace(
+        `/login?redirect=${encodeURIComponent(pathname || "/dashboard")}`
+      );
+    }
+  }, [token, pathname, router]);
 
   React.useEffect(() => {
     if (token && !user) {
@@ -33,6 +51,28 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         .catch(() => {});
     }
   }, [token, user, triggerGetMe, dispatch]);
+
+  React.useEffect(() => {
+    if (user?.role === "STAFF") {
+      const adminOnlyPaths = [
+        "/dashboard",
+        "/categories",
+        "/suppliers",
+        "/purchase-orders",
+        "/stock-movements",
+        "/ai-restock",
+        "/reports",
+        "/settings",
+      ];
+      const isRestricted = adminOnlyPaths.some(
+        (p) => pathname === p || pathname?.startsWith(`${p}/`)
+      );
+      if (isRestricted) {
+        toast.error("Staff accounts cannot access administrator management pages.");
+        router.replace("/staff/dashboard");
+      }
+    }
+  }, [user, pathname, router]);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
