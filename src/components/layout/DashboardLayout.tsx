@@ -3,6 +3,7 @@
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AppSidebar } from "./AppSidebar";
+import { StaffSidebar } from "./StaffSidebar";
 import { AppHeader } from "./AppHeader";
 import { useLazyGetMeQuery } from "@/lib/redux/services/authApi";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
@@ -95,10 +96,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     };
   }, [isMobileOpen]);
 
+  const SidebarComponent = user?.role === "STAFF" ? StaffSidebar : AppSidebar;
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-slate-50 font-sans antialiased text-slate-900">
       <div className="hidden md:flex md:shrink-0">
-        <AppSidebar
+        <SidebarComponent
           isCollapsed={isCollapsed}
           onToggleCollapse={() => setIsCollapsed((prev) => !prev)}
         />
@@ -112,7 +115,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             aria-hidden="true"
           />
           <div className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] shadow-2xl">
-            <AppSidebar
+            <SidebarComponent
               isCollapsed={false}
               onToggleCollapse={() => {}}
               onNavigateMobile={() => setIsMobileOpen(false)}
