@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
-import { LoadingState } from "@/components/common/LoadingState";
+import { TableSkeleton } from "@/components/common/Skeletons";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -250,7 +250,7 @@ export default function PurchaseOrdersPage() {
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         {isLoading ? (
-          <LoadingState message="Loading purchase orders..." />
+          <TableSkeleton columns={7} rows={6} />
         ) : isError ? (
           <ErrorState
             title="Failed to Load Purchase Orders"
