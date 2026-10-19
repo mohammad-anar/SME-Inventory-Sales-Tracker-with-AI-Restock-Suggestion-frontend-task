@@ -28,6 +28,8 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { TableSkeleton, TimelineSkeleton } from "@/components/common/Skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -280,7 +282,7 @@ export default function AdminStaffManagementPage() {
           </div>
           <div className="mt-3">
             <span className="text-2xl font-bold tracking-tight text-slate-900">
-              {stats.total}
+              {isLoading ? <Skeleton className="h-7 w-16" /> : stats.total}
             </span>
             <span className="ml-2 text-xs font-medium text-slate-500">team accounts</span>
           </div>
@@ -297,7 +299,7 @@ export default function AdminStaffManagementPage() {
           </div>
           <div className="mt-3">
             <span className="text-2xl font-bold tracking-tight text-emerald-600">
-              {stats.active}
+              {isLoading ? <Skeleton className="h-7 w-16" /> : stats.active}
             </span>
             <span className="ml-2 text-xs font-medium text-slate-500">operational</span>
           </div>
@@ -314,7 +316,7 @@ export default function AdminStaffManagementPage() {
           </div>
           <div className="mt-3">
             <span className="text-2xl font-bold tracking-tight text-slate-700">
-              {stats.inactive}
+              {isLoading ? <Skeleton className="h-7 w-16" /> : stats.inactive}
             </span>
             <span className="ml-2 text-xs font-medium text-slate-500">blocked access</span>
           </div>
@@ -331,7 +333,7 @@ export default function AdminStaffManagementPage() {
           </div>
           <div className="mt-3">
             <span className="text-2xl font-bold tracking-tight text-slate-900">
-              {stats.totalSales}
+              {isLoading ? <Skeleton className="h-7 w-16" /> : stats.totalSales}
             </span>
             <span className="ml-2 text-xs font-medium text-slate-500">lifetime receipts</span>
           </div>
@@ -391,9 +393,7 @@ export default function AdminStaffManagementPage() {
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         {isLoading ? (
-          <div className="flex h-64 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          </div>
+          <TableSkeleton columns={7} rows={6} />
         ) : users.length === 0 ? (
           <div className="p-8">
             <EmptyState
@@ -1040,9 +1040,7 @@ function StaffDetailsModal({
           {tab === "SALES" && (
             <div>
               {isSalesLoading ? (
-                <div className="flex h-36 items-center justify-center">
-                  <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-                </div>
+                <TableSkeleton columns={5} rows={3} showHeader={false} />
               ) : sales.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-500">
                   No sales recorded by this staff member yet.
@@ -1089,9 +1087,7 @@ function StaffDetailsModal({
           {tab === "ACTIVITIES" && (
             <div>
               {isActLoading ? (
-                <div className="flex h-36 items-center justify-center">
-                  <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-                </div>
+                <TimelineSkeleton items={3} />
               ) : activities.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-500">
                   No recorded activities found for this staff member.
