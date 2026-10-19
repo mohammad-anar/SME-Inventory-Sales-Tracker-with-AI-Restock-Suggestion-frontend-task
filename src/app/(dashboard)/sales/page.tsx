@@ -21,6 +21,7 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -57,6 +58,7 @@ export default function SalesPage() {
 
   const [isPosOpen, setIsPosOpen] = React.useState(false);
   const [selectedSale, setSelectedSale] = React.useState<Sale | null>(null);
+  const [saleToVoid, setSaleToVoid] = React.useState<Sale | null>(null);
 
   const [customerName, setCustomerName] = React.useState("");
   const [paymentMethod, setPaymentMethod] = React.useState<PaymentMethod>("CASH");
@@ -189,13 +191,14 @@ export default function SalesPage() {
     }
   };
 
-  const handleVoidSale = async (id: string) => {
-    if (!confirm("Are you sure you want to void this sale? Inventory will be restored.")) {
-      return;
-    }
+  const handleConfirmVoid = async () => {
+    if (!saleToVoid) return;
     try {
-      await voidSaleMutation(id).unwrap();
-      toast.success("Sale voided and stock restored successfully");
+      await voidSaleMutation(saleToVoid.id).unwrap();
+      toast.success(
+        `Sale #${saleToVoid.invoiceNo} voided and stock restored successfully`
+      );
+      setSaleToVoid(null);
     } catch (err: unknown) {
       const apiErr = err as { data?: { message?: string } };
       toast.error(apiErr?.data?.message || "Failed to void transaction");
@@ -386,7 +389,7 @@ export default function SalesPage() {
                             variant="ghost"
                             size="sm"
                             disabled={isVoiding}
-                            onClick={() => handleVoidSale(sale.id)}
+                            onClick={() => setSaleToVoid(sale)}
                             className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                             title="Void Sale"
                           >
@@ -705,6 +708,18 @@ export default function SalesPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      <ConfirmDialog
+        open={Boolean(saleToVoid)}
+        onOpenChange={(open) => !open && setSaleToVoid(null)}
+        title={`Void Invoice #${saleToVoid?.invoiceNo || ""}?`}
+        description="Are you sure you want to void this sales transaction? All purchased items will be credited back into warehouse inventory."
+        confirmLabel="Void Transaction"
+        cancelLabel="Keep Active"
+        variant="destructive"
+        isLoading={isVoiding}
+        onConfirm={handleConfirmVoid}
+      />
     </PageContainer>
   );
 }
