@@ -13,6 +13,7 @@ import {
   ArrowLeftRight,
   Sparkles,
   BarChart3,
+  Users,
   Settings,
   LogOut,
   ChevronLeft,
@@ -76,6 +77,11 @@ export const navigationItems: NavigationItem[] = [
     title: "Reports",
     href: "/reports",
     icon: BarChart3,
+  },
+  {
+    title: "Staff Management",
+    href: "/staff",
+    icon: Users,
   },
   {
     title: "Settings",
