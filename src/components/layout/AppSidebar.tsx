@@ -22,8 +22,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { logout } from "@/lib/redux/slices/authSlice";
+import { useAppSelector } from "@/lib/redux/hooks";
+import { useLogoutHandler } from "@/lib/auth/useLogout";
 
 export interface NavigationItem {
   title: string;
@@ -104,7 +104,6 @@ export function AppSidebar({
   isMobile = false,
 }: AppSidebarProps) {
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
 
   const collapsed = !isMobile && isCollapsed;
@@ -118,9 +117,7 @@ export function AppSidebar({
     .substring(0, 2)
     .toUpperCase();
 
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+  const { handleLogout, isLoggingOut } = useLogoutHandler();
 
   return (
     <aside
@@ -236,15 +233,16 @@ export function AppSidebar({
           </div>
 
           {!collapsed && (
-            <Link
-              href="/login"
+            <button
+              type="button"
               onClick={handleLogout}
+              disabled={isLoggingOut}
               title="Sign out"
-              className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-slate-800 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="flex h-8 w-8 items-center justify-center rounded-md text-slate-400 hover:bg-slate-800 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50"
               aria-label="Sign out"
             >
               <LogOut className="h-4 w-4" />
-            </Link>
+            </button>
           )}
         </div>
       </div>
