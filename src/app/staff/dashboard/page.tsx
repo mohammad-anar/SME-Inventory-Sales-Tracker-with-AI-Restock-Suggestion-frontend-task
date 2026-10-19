@@ -16,6 +16,12 @@ import {
 } from "lucide-react";
 import { PageContainer } from "@/components/common/PageContainer";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import {
+  StaffDashboardSkeleton,
+  TableSkeleton,
+  TimelineSkeleton,
+} from "@/components/common/Skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/lib/redux/hooks";
 import {
@@ -52,6 +58,10 @@ export default function StaffDashboardPage() {
   const recentSales = salesResponse?.data || [];
   const recentActivities = activitiesResponse?.data || [];
   const lowStockList = lowStockResponse?.data || [];
+
+  if (isSummaryLoading && isSalesLoading) {
+    return <StaffDashboardSkeleton />;
+  }
 
   return (
     <PageContainer>
@@ -105,7 +115,11 @@ export default function StaffDashboardPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-slate-900">
-              {isSummaryLoading ? "--" : summary?.todaySalesCount ?? 0}
+              {isSummaryLoading ? (
+                <Skeleton className="h-7 w-16" />
+              ) : (
+                summary?.todaySalesCount ?? 0
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Orders completed today</p>
           </div>
@@ -122,9 +136,11 @@ export default function StaffDashboardPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-slate-900">
-              {isSummaryLoading
-                ? "--"
-                : `$${Number(summary?.todaySalesTotal ?? 0).toFixed(2)}`}
+              {isSummaryLoading ? (
+                <Skeleton className="h-7 w-24" />
+              ) : (
+                `$${Number(summary?.todaySalesTotal ?? 0).toFixed(2)}`
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Gross volume generated</p>
           </div>
@@ -141,7 +157,11 @@ export default function StaffDashboardPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-slate-900">
-              {isSummaryLoading ? "--" : summary?.completedSalesCount ?? 0}
+              {isSummaryLoading ? (
+                <Skeleton className="h-7 w-16" />
+              ) : (
+                summary?.completedSalesCount ?? 0
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">All-time lifetime orders</p>
           </div>
@@ -158,7 +178,11 @@ export default function StaffDashboardPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-amber-600">
-              {isLowStockLoading ? "--" : lowStockList.length}
+              {isLowStockLoading ? (
+                <Skeleton className="h-7 w-16" />
+              ) : (
+                lowStockList.length
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Items requiring restock</p>
           </div>
@@ -187,9 +211,7 @@ export default function StaffDashboardPage() {
 
             <div className="overflow-x-auto">
               {isSalesLoading ? (
-                <div className="p-8 text-center text-sm text-slate-500">
-                  Loading your sales data...
-                </div>
+                <TableSkeleton columns={6} rows={4} showHeader={false} />
               ) : recentSales.length === 0 ? (
                 <div className="p-8 text-center text-sm text-slate-500">
                   No sales recorded under your account yet.
@@ -255,9 +277,7 @@ export default function StaffDashboardPage() {
 
             <div className="p-6">
               {isActivitiesLoading ? (
-                <div className="py-6 text-center text-xs text-slate-500">
-                  Loading activity log...
-                </div>
+                <TimelineSkeleton items={3} />
               ) : recentActivities.length === 0 ? (
                 <div className="py-6 text-center text-xs text-slate-500">
                   No recorded activities yet.
