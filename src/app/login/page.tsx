@@ -16,8 +16,8 @@ export default function LoginPage() {
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
 
-  const [email, setEmail] = React.useState("admin@stockpilot.com");
-  const [password, setPassword] = React.useState("Admin12345!");
+  const [email, setEmail] = React.useState("admin@gmail.com");
+  const [password, setPassword] = React.useState("12345678");
   const [showPassword, setShowPassword] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
@@ -171,7 +171,7 @@ export default function LoginPage() {
                 Default Credentials:
               </span>
               <div className="mt-1 flex flex-col gap-0.5 text-slate-500">
-                <span>Email: admin@stockpilot.com</span>
+                <span>Email: admin@gmail.com</span>
                 <span>Role: Super Admin / Staff Access</span>
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function LoginPage() {
                   href="/register"
                   className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
                 >
-                  Registration Info
+                  Account Setup Info
                 </Link>
               </p>
             </div>
