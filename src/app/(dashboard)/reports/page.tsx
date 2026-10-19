@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
-import { LoadingState } from "@/components/common/LoadingState";
+import { TableSkeleton } from "@/components/common/Skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
@@ -146,9 +147,11 @@ export default function ReportsPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-slate-900">
-              {isLoading
-                ? "--"
-                : `$${Number(report?.inventoryCostValue ?? 0).toFixed(2)}`}
+              {isLoading ? (
+                <Skeleton className="h-7 w-28" />
+              ) : (
+                `$${Number(report?.inventoryCostValue ?? 0).toFixed(2)}`
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Total capital invested</p>
           </div>
@@ -165,9 +168,11 @@ export default function ReportsPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-emerald-600">
-              {isLoading
-                ? "--"
-                : `$${Number(report?.inventoryRetailValue ?? 0).toFixed(2)}`}
+              {isLoading ? (
+                <Skeleton className="h-7 w-28" />
+              ) : (
+                `$${Number(report?.inventoryRetailValue ?? 0).toFixed(2)}`
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Projected sales volume</p>
           </div>
@@ -184,9 +189,11 @@ export default function ReportsPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-indigo-600">
-              {isLoading
-                ? "--"
-                : `$${Number(report?.unrealizedMargin ?? 0).toFixed(2)}`}
+              {isLoading ? (
+                <Skeleton className="h-7 w-28" />
+              ) : (
+                `$${Number(report?.unrealizedMargin ?? 0).toFixed(2)}`
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Projected inventory profit</p>
           </div>
@@ -216,7 +223,7 @@ export default function ReportsPage() {
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         {isLoading ? (
-          <LoadingState message="Aggregating inventory asset balances..." />
+          <TableSkeleton columns={7} rows={6} />
         ) : isError ? (
           <ErrorState
             title="Failed to Load Valuation Report"
