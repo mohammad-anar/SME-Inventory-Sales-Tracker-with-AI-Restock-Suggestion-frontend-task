@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
-import { LoadingState } from "@/components/common/LoadingState";
+import { TimelineSkeleton } from "@/components/common/Skeletons";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Button } from "@/components/ui/button";
@@ -154,7 +154,7 @@ export default function StaffActivitiesPage() {
         </form>
 
         {isLoading ? (
-          <LoadingState message="Loading your activity timeline..." />
+          <TimelineSkeleton items={5} />
         ) : isError ? (
           <ErrorState
             title="Failed to Load Activities"
