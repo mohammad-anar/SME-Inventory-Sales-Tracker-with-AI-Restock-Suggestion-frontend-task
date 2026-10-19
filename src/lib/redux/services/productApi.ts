@@ -33,6 +33,7 @@ export interface CreateProductPayload {
   unitPrice: number;
   costPrice: number;
   reorderLevel?: number;
+  stockQty?: number;
 }
 
 export interface UpdateProductPayload {
