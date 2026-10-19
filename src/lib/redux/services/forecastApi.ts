@@ -1,81 +1,82 @@
 import { baseApi } from "./baseApi";
-import { ApiResponse } from "@/types/api";
+import {
+  ApiResponse,
+  RestockRecommendationsResult,
+  ProductForecastDetail,
+} from "@/types/api";
 
-export interface RestockSuggestionItem {
-  productId: string;
-  name: string;
-  sku: string;
-  currentStock: number;
-  reorderLevel: number;
-  incomingStock: number;
-  forecastedDemand7Days: number;
-  suggestedRestockQuantity: number;
-  estimatedCost: string | number;
-  urgency: "CRITICAL" | "RECOMMENDED" | "HEALTHY";
-  supplier?: {
-    id: string;
-    name: string;
-  };
-  isSufficientData: boolean;
+export interface GetRestockParams {
+  planningHorizonDays?: number;
+  analysisPeriodDays?: number;
+  priority?: "HIGH" | "MEDIUM" | "LOW" | "ALL";
+  search?: string;
+  forceRefresh?: boolean;
 }
 
-export interface ProductForecastDetails {
+export interface GetProductForecastParams {
   productId: string;
-  productName: string;
-  currentStock: number;
-  reorderLevel: number;
-  incomingStock: number;
-  forecast: {
-    horizonDays: number;
-    totalForecastedDemand: number;
-    dailyPredictions: Array<{ date: string; predictedDemand: number }>;
-  };
-  recommendation: {
-    suggestedQuantity: number;
-    urgency: "CRITICAL" | "RECOMMENDED" | "HEALTHY";
-  };
-  evaluation?: {
-    mae: number;
-    unit: string;
-    wapePercentage?: number;
-    evaluationPeriod: {
-      startDate: string;
-      endDate: string;
-      durationDays: number;
-    };
-  };
+  planningHorizonDays?: number;
+  analysisPeriodDays?: number;
 }
 
 export const forecastApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getRestockSuggestions: builder.query<
-      ApiResponse<RestockSuggestionItem[]>,
-      { page?: number; limit?: number; urgency?: string } | void
+    getRestockRecommendations: builder.query<
+      ApiResponse<RestockRecommendationsResult>,
+      GetRestockParams | void
     >({
       query: (params) => ({
-        url: "/restock-suggestions",
+        url: "/ai-restock/recommendations",
         method: "GET",
         params: params || undefined,
       }),
-      providesTags: [{ type: "Forecast", id: "SUGGESTIONS" }],
+      providesTags: ["Forecast"],
     }),
     getProductForecast: builder.query<
-      ApiResponse<ProductForecastDetails>,
-      string
+      ApiResponse<ProductForecastDetail>,
+      GetProductForecastParams | string
     >({
-      query: (productId) => ({
-        url: `/restock-suggestions/${productId}/forecast`,
-        method: "GET",
-      }),
-      providesTags: (_result, _error, productId) => [
-        { type: "Forecast", id: productId },
+      query: (arg) => {
+        const productId = typeof arg === "string" ? arg : arg.productId;
+        const params =
+          typeof arg === "string"
+            ? undefined
+            : {
+                planningHorizonDays: arg.planningHorizonDays,
+                analysisPeriodDays: arg.analysisPeriodDays,
+              };
+
+        return {
+          url: `/ai-restock/products/${productId}`,
+          method: "GET",
+          params,
+        };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "Forecast",
+          id: typeof arg === "string" ? arg : arg.productId,
+        },
       ],
+    }),
+    refreshRestockRecommendations: builder.mutation<
+      ApiResponse<RestockRecommendationsResult>,
+      void
+    >({
+      query: () => ({
+        url: "/ai-restock/refresh",
+        method: "POST",
+      }),
+      invalidatesTags: ["Forecast"],
     }),
   }),
   overrideExisting: false,
 });
 
 export const {
-  useGetRestockSuggestionsQuery,
+  useGetRestockRecommendationsQuery,
+  useLazyGetRestockRecommendationsQuery,
   useGetProductForecastQuery,
+  useLazyGetProductForecastQuery,
+  useRefreshRestockRecommendationsMutation,
 } = forecastApi;
