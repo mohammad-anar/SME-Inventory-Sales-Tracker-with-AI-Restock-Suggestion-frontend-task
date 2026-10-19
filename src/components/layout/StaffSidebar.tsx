@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   Boxes,
   LayoutDashboard,
@@ -17,9 +17,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { logout } from "@/lib/redux/slices/authSlice";
-import { toast } from "sonner";
+import { useAppSelector } from "@/lib/redux/hooks";
+import { useLogoutHandler } from "@/lib/auth/useLogout";
 
 export interface StaffNavItem {
   title: string;
@@ -74,15 +73,9 @@ export function StaffSidebar({
   isMobile = false,
 }: StaffSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    toast.success("Logged out successfully");
-    router.push("/login");
-  };
+  const { handleLogout, isLoggingOut } = useLogoutHandler();
 
   const displayName = user?.name || "Staff Member";
   const displayEmail = user?.email || "staff@stockpilot.com";
@@ -213,7 +206,8 @@ export function StaffSidebar({
             <button
               type="button"
               onClick={handleLogout}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600"
+              disabled={isLoggingOut}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 disabled:opacity-50"
               title="Sign out"
               aria-label="Sign out"
             >
