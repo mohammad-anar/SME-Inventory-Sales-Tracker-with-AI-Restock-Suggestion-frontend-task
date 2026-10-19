@@ -6,5 +6,11 @@ export default function AuthenticatedDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <DashboardLayout>
+      <React.Suspense fallback={null}>
+        {children}
+      </React.Suspense>
+    </DashboardLayout>
+  );
 }
