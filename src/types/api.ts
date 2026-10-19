@@ -305,4 +305,56 @@ export interface RestockRecommendationsResult {
   recommendations: RestockRecommendation[];
 }
 
+export interface StaffUser {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  phone?: string | null;
+  avatar?: string | null;
+  isActive: boolean;
+  lastLoginAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    sales: number;
+  };
+}
+
+export interface CreateStaffPayload {
+  name: string;
+  email: string;
+  phone?: string | null;
+  avatar?: string | null;
+}
+
+export interface CreateStaffResponse {
+  user: StaffUser;
+  setupToken: string;
+  setupUrl: string;
+  expiresAt: string;
+}
+
+export interface GenerateSetupTokenResponse {
+  setupToken: string;
+  setupUrl: string;
+  expiresAt: string;
+}
+
+export interface UpdateStaffStatusPayload {
+  isActive: boolean;
+}
+
+export interface SetPasswordPayload {
+  token: string;
+  password: string;
+}
+
+export interface VerifySetupTokenResponse {
+  valid: boolean;
+  email: string;
+  name: string;
+}
+
+
 
