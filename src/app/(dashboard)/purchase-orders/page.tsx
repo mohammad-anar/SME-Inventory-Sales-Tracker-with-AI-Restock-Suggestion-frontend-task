@@ -19,6 +19,7 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { StatusBadge } from "@/components/common/StatusBadge";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -53,6 +54,7 @@ export default function PurchaseOrdersPage() {
 
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
   const [selectedPo, setSelectedPo] = React.useState<PurchaseOrder | null>(null);
+  const [poToReceive, setPoToReceive] = React.useState<PurchaseOrder | null>(null);
 
   const [supplierId, setSupplierId] = React.useState("");
   const [poNote, setPoNote] = React.useState("");
@@ -167,18 +169,14 @@ export default function PurchaseOrdersPage() {
     }
   };
 
-  const handleReceiveOrder = async (poId: string) => {
-    if (
-      !confirm(
-        "Receive this purchase order? All items will be credited into inventory."
-      )
-    ) {
-      return;
-    }
-
+  const handleConfirmReceive = async () => {
+    if (!poToReceive) return;
     try {
-      await receivePoMutation(poId).unwrap();
-      toast.success("Purchase order received and inventory updated!");
+      await receivePoMutation(poToReceive.id).unwrap();
+      toast.success(
+        `Purchase order #${poToReceive.poNumber} received and inventory updated!`
+      );
+      setPoToReceive(null);
     } catch (err: unknown) {
       const apiErr = err as { data?: { message?: string } };
       toast.error(apiErr?.data?.message || "Failed to receive purchase order");
@@ -327,7 +325,7 @@ export default function PurchaseOrdersPage() {
                             variant="ghost"
                             size="sm"
                             disabled={isReceiving}
-                            onClick={() => handleReceiveOrder(po.id)}
+                            onClick={() => setPoToReceive(po)}
                             className="h-8 px-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                             title="Receive Stock"
                           >
@@ -650,6 +648,18 @@ export default function PurchaseOrdersPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      <ConfirmDialog
+        open={Boolean(poToReceive)}
+        onOpenChange={(open) => !open && setPoToReceive(null)}
+        title={`Receive PO #${poToReceive?.poNumber || ""}?`}
+        description="Are you sure you want to receive this purchase order? All line items will be immediately credited into active warehouse stock and recorded in the audit ledger."
+        confirmLabel="Receive Stock"
+        cancelLabel="Cancel"
+        variant="default"
+        isLoading={isReceiving}
+        onConfirm={handleConfirmReceive}
+      />
     </PageContainer>
   );
 }
