@@ -55,37 +55,37 @@ export default function StaffDashboardPage() {
 
   return (
     <PageContainer>
-      <div className="rounded-2xl border border-slate-200 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 p-6 sm:p-8 text-white shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="inline-flex items-center rounded-full bg-blue-500/30 px-3 py-1 text-xs font-medium backdrop-blur-sm border border-white/10 mb-3">
+            <div className="inline-flex items-center rounded-md bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 border border-slate-200 mb-2">
               Staff Portal &bull; Live Operations
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
               Welcome back, {user?.name || "Staff Member"}!
             </h1>
-            <p className="mt-1.5 max-w-xl text-sm text-blue-100">
+            <p className="mt-1 max-w-xl text-xs text-slate-500">
               Manage live retail sales transactions, review your sales history, and monitor real-time stock.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               asChild
-              className="bg-white text-blue-700 hover:bg-blue-50 shadow-sm font-semibold h-10 px-4"
+              className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm font-semibold h-9 px-4 text-xs"
             >
               <Link href="/sales">
-                <PlusCircle className="mr-2 h-4 w-4" />
+                <PlusCircle className="mr-1.5 h-4 w-4" />
                 New Sale
               </Link>
             </Button>
             <Button
               asChild
               variant="outline"
-              className="border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm font-medium h-10 px-4"
+              className="border-slate-200 text-slate-700 hover:bg-slate-50 font-medium h-9 px-4 text-xs"
             >
               <Link href="/staff/sales">
-                <Receipt className="mr-2 h-4 w-4" />
+                <Receipt className="mr-1.5 h-4 w-4" />
                 My Sales
               </Link>
             </Button>
