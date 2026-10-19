@@ -1,5 +1,11 @@
 import { baseApi } from "./baseApi";
-import { ApiResponse, UserProfile, RegisterPayload } from "@/types/api";
+import {
+  ApiResponse,
+  UserProfile,
+  RegisterPayload,
+  SetPasswordPayload,
+  VerifySetupTokenResponse,
+} from "@/types/api";
 
 export interface LoginPayload {
   email: string;
@@ -29,6 +35,20 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Auth"],
     }),
+    verifySetupToken: builder.query<ApiResponse<VerifySetupTokenResponse>, string>({
+      query: (token) => ({
+        url: `/auth/verify-setup-token?token=${encodeURIComponent(token)}`,
+        method: "GET",
+      }),
+    }),
+    setPassword: builder.mutation<ApiResponse<LoginResponseData>, SetPasswordPayload>({
+      query: (body) => ({
+        url: "/auth/set-password",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Auth"],
+    }),
     getMe: builder.query<ApiResponse<UserProfile>, void>({
       query: () => ({
         url: "/auth/me",
@@ -50,8 +70,9 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useRegisterMutation,
   useLoginMutation,
+  useVerifySetupTokenQuery,
+  useSetPasswordMutation,
   useGetMeQuery,
   useLazyGetMeQuery,
   useLogoutMutation,
 } = authApi;
-
