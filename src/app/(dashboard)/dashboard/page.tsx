@@ -247,8 +247,8 @@ export default function DashboardPage() {
                       tickFormatter={(val) => `$${val}`}
                     />
                     <Tooltip
-                      formatter={(val: number | string) => [
-                        `$${Number(val).toFixed(2)}`,
+                      formatter={(val: any) => [
+                        `$${Number(val || 0).toFixed(2)}`,
                         "Revenue",
                       ]}
                       contentStyle={{
