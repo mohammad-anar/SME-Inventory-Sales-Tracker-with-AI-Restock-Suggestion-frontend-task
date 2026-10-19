@@ -65,9 +65,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         "/reports",
         "/settings",
       ];
-      const isRestricted = adminOnlyPaths.some(
-        (p) => pathname === p || pathname?.startsWith(`${p}/`)
-      );
+      const isRestricted =
+        pathname === "/staff" ||
+        pathname?.startsWith("/staff/new") ||
+        adminOnlyPaths.some(
+          (p) => pathname === p || pathname?.startsWith(`${p}/`)
+        );
       if (isRestricted) {
         toast.error("Staff accounts cannot access administrator management pages.");
         router.replace("/staff/dashboard");
