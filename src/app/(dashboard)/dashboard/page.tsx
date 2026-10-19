@@ -24,7 +24,7 @@ import {
 } from "recharts";
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
-import { LoadingState } from "@/components/common/LoadingState";
+import { DashboardSkeleton } from "@/components/common/Skeletons";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,15 +65,7 @@ export default function DashboardPage() {
   };
 
   if (isSummaryLoading && isTrendLoading) {
-    return (
-      <PageContainer>
-        <PageHeader
-          title="Executive Dashboard"
-          description="Real-time SME inventory valuation, sales velocity, and business performance metrics."
-        />
-        <LoadingState message="Loading business metrics and financial summaries..." />
-      </PageContainer>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (isSummaryError) {
