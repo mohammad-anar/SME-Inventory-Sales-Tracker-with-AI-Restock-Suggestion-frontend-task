@@ -13,7 +13,7 @@ import {
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
 import { StatusBadge } from "@/components/common/StatusBadge";
-import { LoadingState } from "@/components/common/LoadingState";
+import { TableSkeleton } from "@/components/common/Skeletons";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Button } from "@/components/ui/button";
@@ -134,7 +134,7 @@ export default function StaffSalesPage() {
         </form>
 
         {isLoading ? (
-          <LoadingState message="Loading your sales transactions..." />
+          <TableSkeleton columns={6} rows={6} />
         ) : isError ? (
           <ErrorState
             title="Failed to Load Sales"
