@@ -4,7 +4,7 @@ import * as React from "react";
 import { User, Mail, Shield, Phone, Calendar, Clock, Loader2, Save, Image as ImageIcon } from "lucide-react";
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
-import { LoadingState } from "@/components/common/LoadingState";
+import { ProfileSkeleton } from "@/components/common/Skeletons";
 import { ErrorState } from "@/components/common/ErrorState";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -186,12 +186,7 @@ export default function ProfilePage() {
   const user = profileResponse?.data;
 
   if (isLoading) {
-    return (
-      <PageContainer>
-        <PageHeader title="My Profile" description="Manage your personal account settings and contact details." />
-        <LoadingState message="Loading user profile..." />
-      </PageContainer>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (isError || !user) {
