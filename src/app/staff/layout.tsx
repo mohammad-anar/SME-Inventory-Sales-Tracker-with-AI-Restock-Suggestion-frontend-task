@@ -57,7 +57,9 @@ export default function StaffLayout({ children }: StaffLayoutProps) {
             className="flex-1 overflow-y-auto bg-slate-50 focus:outline-none"
             tabIndex={-1}
           >
-            {children}
+            <React.Suspense fallback={null}>
+              {children}
+            </React.Suspense>
           </main>
         </div>
       </div>
