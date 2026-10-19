@@ -21,7 +21,8 @@ import {
 } from "recharts";
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
-import { LoadingState } from "@/components/common/LoadingState";
+import { TableSkeleton, DetailModalSkeleton } from "@/components/common/Skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { Button } from "@/components/ui/button";
@@ -85,7 +86,7 @@ function ProductForecastDialog({
         </DialogHeader>
 
         {isLoading ? (
-          <LoadingState message="Analyzing product demand velocity and Gemini recommendations..." />
+          <DetailModalSkeleton />
         ) : isError || !detail ? (
           <ErrorState
             title="Forecast Unavailable"
@@ -388,7 +389,11 @@ export default function AiRestockPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-slate-900">
-              {isLoading ? "--" : summary?.highPriorityCount ?? 0}
+              {isLoading ? (
+                <Skeleton className="h-7 w-16" />
+              ) : (
+                summary?.highPriorityCount ?? 0
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Immediate action required</p>
           </div>
@@ -405,7 +410,11 @@ export default function AiRestockPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-slate-900">
-              {isLoading ? "--" : summary?.belowReorderCount ?? 0}
+              {isLoading ? (
+                <Skeleton className="h-7 w-16" />
+              ) : (
+                summary?.belowReorderCount ?? 0
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Stock &le; safety threshold</p>
           </div>
@@ -422,7 +431,11 @@ export default function AiRestockPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-slate-900">
-              {isLoading ? "--" : summary?.criticalRunoutCount ?? 0}
+              {isLoading ? (
+                <Skeleton className="h-7 w-16" />
+              ) : (
+                summary?.criticalRunoutCount ?? 0
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Estimated stockout soon</p>
           </div>
@@ -439,9 +452,11 @@ export default function AiRestockPage() {
           </div>
           <div className="mt-4">
             <div className="text-2xl font-bold tracking-tight text-slate-900">
-              {isLoading
-                ? "--"
-                : `$${Number(summary?.totalEstimatedRestockCost ?? 0).toFixed(2)}`}
+              {isLoading ? (
+                <Skeleton className="h-7 w-24" />
+              ) : (
+                `$${Number(summary?.totalEstimatedRestockCost ?? 0).toFixed(2)}`
+              )}
             </div>
             <p className="mt-1 text-xs text-slate-500">Total replenishment cost</p>
           </div>
@@ -510,7 +525,7 @@ export default function AiRestockPage() {
         </div>
 
         {isLoading ? (
-          <LoadingState message="Analyzing inventory velocity and computing restock forecast..." />
+          <TableSkeleton columns={8} rows={7} />
         ) : isError ? (
           <ErrorState
             title="Failed to Load Forecast"
