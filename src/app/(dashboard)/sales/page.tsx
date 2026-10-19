@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
-import { LoadingState } from "@/components/common/LoadingState";
+import { TableSkeleton } from "@/components/common/Skeletons";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { StatusBadge } from "@/components/common/StatusBadge";
@@ -304,7 +304,7 @@ export default function SalesPage() {
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         {isLoading ? (
-          <LoadingState message="Loading sales transactions..." />
+          <TableSkeleton columns={8} rows={7} />
         ) : isError ? (
           <ErrorState
             title="Failed to Load Sales"
