@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Menu, Settings, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -14,9 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { navigationItems } from "./AppSidebar";
-import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { logout } from "@/lib/redux/slices/authSlice";
-import { toast } from "sonner";
+import { useAppSelector } from "@/lib/redux/hooks";
+import { useLogoutHandler } from "@/lib/auth/useLogout";
 
 interface AppHeaderProps {
   onOpenMobileMenu: () => void;
@@ -24,9 +23,8 @@ interface AppHeaderProps {
 
 export function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
+  const { handleLogout } = useLogoutHandler();
 
   const currentItem = navigationItems.find(
     (item) => pathname === item.href || pathname?.startsWith(`${item.href}/`)
@@ -43,12 +41,6 @@ export function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
     .join("")
     .substring(0, 2)
     .toUpperCase();
-
-  const handleLogout = () => {
-    dispatch(logout());
-    toast.success("Logged out successfully");
-    router.push("/login");
-  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8">
