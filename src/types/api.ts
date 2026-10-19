@@ -46,6 +46,9 @@ export interface Category {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
+  _count?: {
+    products?: number;
+  };
 }
 
 export interface Supplier {
@@ -57,6 +60,9 @@ export interface Supplier {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  _count?: {
+    products?: number;
+  };
 }
 
 export interface Product {
@@ -170,6 +176,8 @@ export interface StockMovement {
   };
   type: StockMovementType;
   quantityChange: number;
+  balanceAfter?: number;
+  reference?: string | null;
   saleItemId?: string | null;
   purchaseOrderItemId?: string | null;
   note?: string | null;
